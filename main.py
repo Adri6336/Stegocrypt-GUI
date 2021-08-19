@@ -3,7 +3,6 @@
 
 # Handle encryption++
 import secrets
-
 from stegano import lsb as steg
 from PIL import Image as img
 from secrets import randbelow  # Needed for cryptographically secure password generation
