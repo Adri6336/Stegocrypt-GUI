@@ -1,13 +1,14 @@
 #  Note: print functions are everywhere here as this app is meant to be ran from an executable file, which allows
 # me to turn off the console (I'm using pyinstaller).
 
-# Handle encryption
-import hashlib
-from Crypto.Cipher import AES  # pycryptodome; pycrypto abandoned
-from Crypto import Random
+# Handle encryption++
+import secrets
+
 from stegano import lsb as steg
-import base64
 from PIL import Image as img
+from secrets import randbelow  # Needed for cryptographically secure password generation
+from threading import Thread as th
+from subprocess import run
 
 # Handle GUI
 import os
@@ -15,45 +16,10 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import filedialog
 
-# Handle other functions
-from secrets import randbelow  # Needed for cryptographically secure password generation
-from threading import Thread as th
-
-
-class AESCipher(object):  # This will be used to encrypt and decrypt text
-    """
-    Yoinked from mnothic, https://stackoverflow.com/questions/12524994/encrypt-decrypt-using-pycrypto-aes-256
-    Much love to them!
-    """
-
-    def __init__(self, key):
-        self.bs = AES.block_size
-        self.key = hashlib.sha256(key.encode()).digest()
-
-    def encrypt(self, raw):
-        raw = self._pad(raw)
-        iv = Random.new().read(AES.block_size)
-        cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return base64.b64encode(iv + cipher.encrypt(raw.encode()))
-
-    def decrypt(self, enc):
-        enc = base64.b64decode(enc)
-        iv = enc[:AES.block_size]
-        cipher = AES.new(self.key, AES.MODE_CBC, iv)
-        return self._unpad(cipher.decrypt(enc[AES.block_size:])).decode('utf-8')
-
-    def _pad(self, s):
-        return s + (self.bs - len(s) % self.bs) * chr(self.bs - len(s) % self.bs)
-
-    @staticmethod
-    def _unpad(s):
-        return s[:-ord(s[len(s) - 1:])]
-
 
 class Stegocrypt:
     """
-    This is the GUI. It has many of the functions needed for this app to work, though the AES function is from
-    an outside class.
+    This is the GUI. It has many of the functions needed for this app to work.
     """
 
     whereami = os.getcwd()  # Determine the current working directory.
@@ -63,8 +29,6 @@ class Stegocrypt:
                '+', '=', '\\', '/', ':'
                ';', '"', "'", '<', '>',
                '?', '|', '{', '}']  # Special symbols, for use with randGen
-    BLOCK_SIZE = 16  # AES algorithm yoinked from
-    #                  https://www.quickprogrammingtips.com/python/aes-256-encryption-and-decryption-in-python.html
 
     def __init__(self, master=None):
         # build ui
@@ -199,153 +163,161 @@ class Stegocrypt:
         :return: None
         """
 
-        # 0. Get worklock
-        self.workLock = True
-        print('=======START ENCRY=======')
-
-        # 1. Set up folder, get picture
-        putHere = self.folder('Encrypted_Pics')
-
-        pic = filedialog.askopenfilename(initialdir=self.whereami, title='Select a Picture to Modify',
-                                         filetypes=(("Pictures", ['*.jpeg', '*.png']), ('Invalid Files', '*.*')))
-
-        if not os.path.isfile(str(pic)):  # User exited out; abort silently
-            self.workLock = False
-            return
-
-        # 2. Get message, end prematurely if empty, and save password
-        toEncode = self.messEntry.get("1.0", "end-1c")  # Get message
-        passwd = self.passEntry.get()  # Get password
-        name = self.nameEntry.get()  # Get name, if there's any
-
-
-        if passwd == '':  # Empty password invalid; abort
-            self.setText(where=self.displayWin, text='Aborted: Enter or generate password first')
-            self.workLock = False
-            return
-
-        if toEncode == '':  # No message; abort
-            self.setText(where=self.displayWin, text='Aborted: Nothing is in message')
-            self.workLock = False
-            return
-
-
-        # 2.5 Determine name and extension
-        fileInfo = self.fileInfo(pathway=pic)  # Gets name and extension (w/out '.') info as a tuple
-
-        if name == '':  # If the user hasn't added a custom name
-            name = fileInfo[0]  # Use default name
-        extension = '.' + fileInfo[1]  # Save extension type
-        del fileInfo  # Delete the tuple as it won't be used later
-
-        if not extension == '.jpeg' and not extension == '.png':
-            self.setText(where=self.displayWin, text='Aborted: Selected file not JPEG or PNG')
-            self.workLock = False
-            return
-
-        # 3. Convert to byte stream, pass into pyAesCrypt
-        print('Trying to encrypt')
-        self.setText(where=self.displayWin, text='Now working on encrypting message with AES256-CBC cipher ...')
-
-
         try:
-            cipher = AESCipher(passwd)  # Instantiate cipher with password
-            cipherText = cipher.encrypt(toEncode)  # Encrypt data
 
-        except Exception as e:  # Abort process, prevent leaks.
-            self.setText(where=self.displayWin, text='Error: ' + str(e))
+            # 0. Get worklock
+            self.workLock = True
+            print('=======START ENCRY=======')
+
+            # 1. Set up folder, get picture
+            putHere = self.folder('Encrypted_Pics')
+
+            pic = filedialog.askopenfilename(initialdir=self.whereami, title='Select a Picture to Modify',
+                                             filetypes=(("Pictures", ['*.png']), ('Invalid Files', '*.*')))
+
+            if not os.path.isfile(str(pic)):  # User exited out; abort silently
+                self.workLock = False
+                return
+
+            # 2. Get message, end prematurely if empty, and save password
+            toEncode = self.messEntry.get("1.0", "end-1c")  # Get message
+            passwd = self.passEntry.get()  # Get password
+            name = self.nameEntry.get()  # Get name, if there's any
+
+
+            if passwd == '':  # Empty password invalid; abort
+                self.setText(where=self.displayWin, text='Aborted: Enter or generate password first')
+                self.workLock = False
+                return
+
+            if toEncode == '':  # No message; abort
+                self.setText(where=self.displayWin, text='Aborted: Nothing is in message')
+                self.workLock = False
+                return
+
+
+            # 2.5 Determine name and extension
+            fileInfo = self.fileInfo(pathway=pic)  # Gets name and extension (w/out '.') info as a tuple
+
+            if name == '':  # If the user hasn't added a custom name
+                name = fileInfo[0]  # Use default name
+            extension = '.' + fileInfo[1]  # Save extension type
+            del fileInfo  # Delete the tuple as it won't be used later
+
+            if not extension == '.png':
+                self.setText(where=self.displayWin, text='Aborted: Selected file not PNG')
+                self.workLock = False
+                return
+
+            # 3. Pass text onto stegocrypt
+            print('Trying to encrypt')
+            self.setText(where=self.displayWin, text='Now working on encrypting message with AES-256 cipher ...')
+
+            with open('Data\\Messages\\1.scg', 'w') as file:
+                file.write(toEncode)  # Save plaintext to file
+
+            run(['stegocrypt.exe', '-e', passwd])  # Ask stegocryptgo to encrypt plaintext
+
+            with open('Data\\Messages\\2.scg', 'r') as file:
+                cipherText = file.read()  # Get the base64 aes-encrypted ciphertext
+
+            # 4. Pass byte stream to embed
+            print('Encrypted: ' + str(cipherText))
+            print('Passing stuff to embed')
+            self.embed(content=cipherText, output=putHere, picture=pic, filename=name+extension)
+
+            # 5. Clean up
+            del passwd, cipherText
+
+            with open('Data\\Messages\\1.scg', 'w') as file:
+                file.write(secrets.token_hex(10000))  # Overwrite to help conceal message
+
+            # 6. Release worklock, end
             self.workLock = False
             return
-
-        # 4. Pass byte stream to embed
-        print('Encrypted: ' + str(cipherText))
-        print('Passing stuff to embed')
-        self.embed(content=cipherText, output=putHere, picture=pic, filename=name+extension)
-
-        # 5. Clean up
-        del passwd, cipherText, cipher
-
-        # 6. Release worklock, end
-        self.workLock = False
-        return
-
-
-    def decryPic(self):
-        """
-        This will extract data from a message and attempt to decrypt it with the user
-        provided password. If successful, displays message content to message textbox; else,
-        tells user that it failed in the display textbox.
-
-        :return: None
-        """
-        # 0. Obtain worklock and get password
-        self.workLock = True
-        passwd = self.passEntry.get()  # Get password
-        print('=======START DECRY=======')
-
-        # 1. Set up folder, get picture. Determine if file is picture
-        putHere = self.folder('Encrypted_Pics')
-
-        pic = filedialog.askopenfilename(initialdir=self.whereami + '/' + putHere,
-                                         title='Select a Picture to Investigate',
-                                         filetypes=(("Pictures", ['*.jpeg', '*.png']), ('Invalid Files', '*.*')))
-
-        if not os.path.isfile(str(pic)):  # User exited out; abort silently
-            self.workLock = False
-            return
-
-        fileInfo = self.fileInfo(pathway=pic)  # Get name and extension
-        if not fileInfo[1] == 'jpeg' and not fileInfo[1] == 'png':
-            self.setText(where=self.displayWin, text='Aborted: Selected file not supported image (PNG or JPEG)')
-            self.workLock = False
-            return
-
-        # 2. Look into image for any embedding
-        try:
-            results = steg.reveal(pic)  # Look into photo with steg module. Save string results
-
-        except Exception as e:
-            print(e)
-            self.setText(where=self.displayWin, text='Nothing found in image or image is corrupted')
-            self.workLock = False
-            return
-
-
-        if results == '':
-            self.setText(where=self.displayWin, text='Nothing was found in the image')
-            self.workLock = False
-            return
-
-        else:
-            self.setText(where=self.displayWin, text='Found something in image. Attempting to decrypt ...')
-
-        # 3. Attempt decryption
-        print('Found: ' + results)
-
-        results = results.replace(results[0], '')  # The embedding leaves a b' prefix -- I need to delete this
-        results = results.replace(results[0], '')  # Since the string gets smaller, the 2nd element becomes the 1st
-
-        print('Found2: ' + results)
-        print('Found(bytes): ' + str(results.encode()))  # Encoding allows python to recognize the base64
-
-        try:  # Attempt to decrypt found info
-
-            cipher = AESCipher(passwd)  # Instantiate cipher with password
-            plainText = cipher.decrypt(results.encode())  # Decrypt base64 AES stuff
-            self.setText(where=self.messEntry, text=plainText)
-            self.setText(where=self.displayWin, text='Message successfully decrypted!')
 
         except Exception as e:
             print('Error: ' + str(e))
             self.setText(where=self.displayWin, text='Error: ' + str(e))
             self.workLock = False
-            del cipher
             return
 
-        # 4. Clean up
-        del cipher
-        self.workLock = False
+    def decryPic(self):
+        try:
 
+            """
+            This will extract data from a message and attempt to decrypt it with the user
+            provided password. If successful, displays message content to message textbox; else,
+            tells user that it failed in the display textbox.
+    
+            :return: None
+            """
+            # 0. Obtain worklock and get password
+            self.workLock = True
+            passwd = self.passEntry.get()  # Get password
+            print('=======START DECRY=======')
+
+            # 1. Set up folder, get picture. Determine if file is picture
+            putHere = self.folder('Encrypted_Pics')
+
+            pic = filedialog.askopenfilename(initialdir=self.whereami + '/' + putHere,
+                                             title='Select a Picture to Investigate',
+                                             filetypes=(("Pictures", ['*.png']), ('Invalid Files', '*.*')))
+
+            if not os.path.isfile(str(pic)):  # User exited out; abort silently
+                self.workLock = False
+                return
+
+            fileInfo = self.fileInfo(pathway=pic)  # Get name and extension
+            if not fileInfo[1] == 'png':
+                self.setText(where=self.displayWin, text='Aborted: Selected file not supported image (PNG)')
+                self.workLock = False
+                return
+
+            # 2. Look into image for any embedding
+            try:
+                results = steg.reveal(pic)  # Look into photo with steg module. Save string results
+
+            except Exception as e:
+                print(e)
+                self.setText(where=self.displayWin, text='Nothing found in image or image is corrupted')
+                self.workLock = False
+                return
+
+            if results == '':
+                self.setText(where=self.displayWin, text='Nothing was found in the image')
+                self.workLock = False
+                return
+
+            else:
+                self.setText(where=self.displayWin, text='Found something in image. Attempting to decrypt ...')
+
+            # 3. Attempt decryption
+            print('Found: ' + results)
+
+            with open('Data\\Messages\\2.scg', 'w') as file:
+                file.write(results)  # Save ciphertext to file
+
+            run(['stegocrypt.exe', '-d', passwd])  # Tell stegocryptgo to decrypt encoded message
+
+            with open('Data\\Messages\\1.scg', 'r') as file:
+                plainText = file.read()  # Get plaintext
+
+
+            self.setText(where=self.messEntry, text=plainText)
+            self.setText(where=self.displayWin, text='Message successfully decrypted!')
+
+            # 4. END
+            with open('Data\\Messages\\1.scg', 'w') as file:
+                file.write(secrets.token_hex(10000))  # Overwrite to help conceal message
+
+            self.workLock = False
+
+        except Exception as e:
+            print('Error: ' + str(e))
+            self.setText(where=self.displayWin, text='Error: ' + str(e))
+            self.workLock = False
+            return
 
 
     def embed(self, content, output, picture, filename):
@@ -398,7 +370,7 @@ class Stegocrypt:
                     print('Embedded: ' + embedded)
                     print('Recovered:' + str(x))
 
-                    if plusSize >= 2500:  # I'm not certain what to make the threshold. Maybe 2500 is a good bet?
+                    if plusSize >= 30:  # I'm not certain what to make the threshold.
                         print('Infinite loop detected')
                         self.setText(where=self.displayWin, text='Error: Unknown malfunction caused infinite loop')
                         try:
@@ -417,9 +389,8 @@ class Stegocrypt:
             self.workLock = False
             return
 
-
         self.setText(where=self.displayWin, text='Success! The message has been encrypted and hidden inside the image')
-        print('Image succesfully embedded with encrypted text')
+        print('Image successfully embedded with encrypted text')
 
 
     def fileInfo(self, pathway):
@@ -535,4 +506,3 @@ if __name__ == '__main__':
 
     app = Stegocrypt(root)
     app.run()
-
