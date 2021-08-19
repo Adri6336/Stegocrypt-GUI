@@ -1,6 +1,6 @@
-//  This will handle the encryption and decryption of text provided by the Python GUI
+// This will handle the encryption and decryption of text provided by the Python GUI
 
-//  Will encode text given to it with the switch -e (encrypt) by recieving text,
+// Will encode text given to it with the switch -e (encrypt) by recieving text,
 // encrypting with AES, then converting it to base64 and returning it to Python
 // for embedding into an image.
 
