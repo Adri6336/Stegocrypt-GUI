@@ -1,4 +1,6 @@
 # Stegocrypt-GUI
+*Only PNG images are supported currently*
+
 Tool for easily steganographically embedding AES-256 encrypted messages into images for ultra-secure communication. Designed for users with no programming experience to get the most out of steganographic communication. All you'll need to do to start is:
 
 1. Run Stegocrypt-GUI
