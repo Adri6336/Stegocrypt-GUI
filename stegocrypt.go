@@ -66,13 +66,13 @@ func decrypt() {
 	*/
 
 	// 1. Get info to work with
-	b64Text := readFile(".\\Data\\Messages\\2.scg") // Windows path, swap for linux
+	b64Text := readFile("./Data/Messages/2.scg")
 
 	// 2. Decode base64 info
 	decoded, err := base64.StdEncoding.DecodeString(b64Text)
 
 	if err != nil {
-		os.WriteFile(".\\Data\\Messages\\ERROR.log", []byte(err.Error()), 0755)
+		os.WriteFile("./Data/Messages/ERROR.log", []byte(err.Error()), 0755)
 		return
 	}
 
@@ -104,6 +104,7 @@ func decrypt() {
 	plainText, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
 		fmt.Println(err)
+        os.WriteFile("./Data/Messages/ERROR.log", []byte(err.Error()), 0755)
 	}
 
 	// 4. Save info to 1.scg
@@ -117,7 +118,7 @@ func encrypt() {
 	*/
 
 	// 1. Get info to work with (Python will write to the file first)
-	plainText := []byte(readFile(".\\Data\\Messages\\1.scg")) // Windows path, swap for linux
+	plainText := []byte(readFile("./Data/Messages/1.scg")) // Windows path, swap for linux
 
 	// 2. Encrypt info using password digest
 	password := passwordHash(os.Args[2])
@@ -193,21 +194,19 @@ func saveData(content string, encrypt bool) {
 	var path string
 
 	if encrypt {
-		path = ".\\Data\\Messages\\2.scg" // Windows path, swap for linux
+		path = "./Data/Messages/2.scg"
 
 	} else if !encrypt {
-		path = ".\\Data\\Messages\\1.scg"
+		path = "./Data/Messages/1.scg"
 	}
 
 	// 2. Convert content to bytes and write to file
 	data := []byte(content)
 
-	fmt.Printf("\nTrying to save: %s\n", content)
-
 	err := os.WriteFile(path, data, 0755)
 
 	if err != nil {
-		os.WriteFile(".\\Data\\Messages\\ERROR.log", []byte(err.Error()), 0755)
+		os.WriteFile("./Data/Messages/ERROR.log", []byte(err.Error()), 0755)
 	}
 }
 
