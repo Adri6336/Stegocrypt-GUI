@@ -22,6 +22,15 @@ If you've recieved an image with encrypted text in it, you'll need to:
 2. Extract contents.
 3. On Windows, run the "Stegocrypt-GUI.exe" file found within. On Linux, execute the "start-stegocryptgui" script found within.
 
+# Version 0.2 Changelog
+
+- Stegocrypt-GUI now creates the directories and files it needs (except Go-derived exe) upon runtime.
+- Fixed incorrect password decryption notification. Used to say 'decryption successful', now indicates that it actually failed.
+- Made the script able to run on both Linux and Windows without forcing me to modify the script.
+
+
+
+
 Note: Memes are inconspicuous, so they're the perfect vessel for secret messages (just saying, lol).
 
 Note 2: You'll need to ensure that the image is not compressed when sending it to your recipient. Email attachments are usually good for this.
