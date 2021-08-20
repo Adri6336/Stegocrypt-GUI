@@ -104,7 +104,7 @@ func decrypt() {
 	plainText, err := gcm.Open(nil, nonce, ciphertext, nil)
 	if err != nil {
 		fmt.Println(err)
-        os.WriteFile("./Data/Messages/ERROR.log", []byte(err.Error()), 0755)
+        	os.WriteFile("./Data/Messages/ERROR.log", []byte(err.Error()), 0755)
 	}
 
 	// 4. Save info to 1.scg
