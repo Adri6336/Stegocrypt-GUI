@@ -26,7 +26,7 @@ If you've recieved an image with encrypted text in it, you'll need to:
 
 - Stegocrypt-GUI now creates the directories and files it needs (except Go-derived exe) upon runtime.
 - Fixed incorrect password decryption notification. Used to say 'decryption successful', now indicates that it actually failed.
-- Made the script able to run on both Linux and Windows without forcing me to modify the script.
+- Made the Python script able to run on both Linux and Windows without forcing me to modify it every time.
 
 
 -------------------------
