@@ -29,7 +29,7 @@ If you've recieved an image with encrypted text in it, you'll need to:
 - Made the script able to run on both Linux and Windows without forcing me to modify the script.
 
 
-
+-------------------------
 
 Note: Memes are inconspicuous, so they're the perfect vessel for secret messages (just saying, lol).
 
