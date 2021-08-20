@@ -1,6 +1,3 @@
-#  Note: print functions are everywhere here as this app is meant to be ran from an executable file, which allows
-# me to turn off the console (I'm using pyinstaller).
-
 # Handle encryption++
 import secrets
 from stegano import lsb as steg
@@ -14,7 +11,7 @@ import os
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import filedialog
-
+from platform import system
 
 class Stegocrypt:
     """
@@ -22,6 +19,20 @@ class Stegocrypt:
     """
 
     whereami = os.getcwd()  # Determine the current working directory.
+
+    # Determine operating system
+    whatami = system()
+    if whatami == 'Windows':  # Windows, use backslashes & exe
+        program = '.\\stegocrypt.exe'
+        plainPath = 'Data\\Messages\\1.scg'
+        ciphPath = 'Data\\Messages\\2.scg'
+
+    else:  # Else, use forward slashes & no exe
+        program = './stegocrypt'
+        plainPath = 'Data/Messages/1.scg'
+        ciphPath = 'Data/Messages/2.scg'
+
+
     workLock = False  # Prevents multiple threads from running
     special = ['!', '@', '#', '$', '%',
                '^', '&', '*', '(', ')',
@@ -106,6 +117,12 @@ class Stegocrypt:
         # Main widget
         self.mainwindow = self.frame1
 
+        # Set up directories and files if not already made
+        self.folder(name='Data')
+        self.folder(name='Data/Messages')
+        self.isFile(path=self.plainPath)
+        self.isFile(path=self.ciphPath)
+
         # Welcome message (small box, so keep it short)
         self.setText(where=self.displayWin, text=('Please enter a password to encrypt / decrypt messages ' +
                                                   'with Stegocrypt-GUI. Filename is optional.'))
@@ -166,7 +183,7 @@ class Stegocrypt:
 
             # 0. Get worklock
             self.workLock = True
-            print('=======START ENCRY=======')
+            print('\n=======START ENCRY=======\n')
 
             # 1. Set up folder, get picture
             putHere = self.folder('Encrypted_Pics')
@@ -212,12 +229,12 @@ class Stegocrypt:
             print('Trying to encrypt')
             self.setText(where=self.displayWin, text='Now working on encrypting message with AES-256 cipher ...')
 
-            with open('Data\\Messages\\1.scg', 'w') as file:
+            with open(self.plainPath, 'w') as file:
                 file.write(toEncode)  # Save plaintext to file
 
-            run(['stegocrypt.exe', '-e', passwd])  # Ask stegocryptgo to encrypt plaintext
+            run([self.program, '-e', passwd])  # Ask stegocryptgo to encrypt plaintext
 
-            with open('Data\\Messages\\2.scg', 'r') as file:
+            with open(self.ciphPath, 'r') as file:
                 cipherText = file.read()  # Get the base64 aes-encrypted ciphertext
 
             # 4. Pass byte stream to embed
@@ -228,7 +245,7 @@ class Stegocrypt:
             # 5. Clean up
             del passwd, cipherText
 
-            with open('Data\\Messages\\1.scg', 'w') as file:
+            with open(self.plainPath, 'w') as file:
                 file.write(secrets.token_hex(10000))  # Overwrite to help conceal message
 
             # 6. Release worklock, end
@@ -247,14 +264,14 @@ class Stegocrypt:
             """
             This will extract data from a message and attempt to decrypt it with the user
             provided password. If successful, displays message content to message textbox; else,
-            tells user that it failed in the display textbox.
+            it tells user that it failed in the display textbox.
     
             :return: None
             """
             # 0. Obtain worklock and get password
             self.workLock = True
             passwd = self.passEntry.get()  # Get password
-            print('=======START DECRY=======')
+            print('\n=======START DECRY=======\n')
 
             # 1. Set up folder, get picture. Determine if file is picture
             putHere = self.folder('Encrypted_Pics')
@@ -283,9 +300,10 @@ class Stegocrypt:
                 self.workLock = False
                 return
 
-            if results == '':
+            if results == None:
                 self.setText(where=self.displayWin, text='Nothing was found in the image')
                 self.workLock = False
+                print('No messages located within image. Cancelling ...')
                 return
 
             else:
@@ -294,12 +312,22 @@ class Stegocrypt:
             # 3. Attempt decryption
             print('Found: ' + results)
 
-            with open('Data\\Messages\\2.scg', 'w') as file:
+            with open(self.ciphPath, 'w') as file:
                 file.write(results)  # Save ciphertext to file
 
-            run(['stegocrypt.exe', '-d', passwd])  # Tell stegocryptgo to decrypt encoded message
+            run([self.program, '-d', passwd])  # Tell stegocrypt to decrypt encoded message
 
-            with open('Data\\Messages\\1.scg', 'r') as file:
+            if os.path.isfile('Data/Messages/ERROR.log'):
+                self.setText(where=self.displayWin, text='Failed to decrypt, incorrect password likely.')
+                self.workLock = False
+                os.remove('Data/Messages/ERROR.log')
+                return
+
+            else:
+                print('Decrypted message succesfully')
+        
+
+            with open(self.plainPath, 'r') as file:
                 plainText = file.read()  # Get plaintext
 
 
@@ -307,7 +335,7 @@ class Stegocrypt:
             self.setText(where=self.displayWin, text='Message successfully decrypted!')
 
             # 4. END
-            with open('Data\\Messages\\1.scg', 'w') as file:
+            with open(self.plainPath, 'w') as file:
                 file.write(secrets.token_hex(10000))  # Overwrite to help conceal message
 
             self.workLock = False
@@ -414,7 +442,7 @@ class Stegocrypt:
         results = ''  # Create a placeholder variable: this'll hold the string of the list compiled
         results = results.join(newName)  # Compile list
 
-        return tuple(results.split('.'))  # Split by the period. The name == 0, extension == 1
+        return tuple(results.split('.'))  # Split by the period. The name = 0, extension = 1
 
 
     def setText(self, where, text):
@@ -490,8 +518,21 @@ class Stegocrypt:
         """
         if not os.path.exists(self.whereami + '/' + name):
             os.mkdir(name)
+        
 
         return name
+
+    def isFile(self, path):
+        """
+        Makes a file if it hasn't already been made.
+
+        :Param name: This specifies the name of the file.
+        :Return: None
+        """
+
+        if not os.path.isfile(path):
+            file = open(path, 'w')
+            file.close()
 
 
     def run(self):
@@ -501,7 +542,7 @@ class Stegocrypt:
 if __name__ == '__main__':
     root = tk.Tk()
     root.resizable(height=False, width=False)  # Prohibit resizing the height or width of window
-    root.wm_title("Stegocrypt 0.1")  # Sets the title of the window to the string included as an argument
+    root.wm_title("Stegocrypt 0.2")  # Sets the title of the window to the string included as an argument
 
     app = Stegocrypt(root)
     app.run()
