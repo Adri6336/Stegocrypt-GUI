@@ -40,8 +40,8 @@ If you've recieved an image with encrypted text in it, you'll need to:
   VIII. Enter the command, "go build stegocrypt.go". You should now have generated an executable file from the code that you've reviewed and certified to be malware-free.
   IX. With Python3 installed, enter the command, "pip install -r requirements.txt" (use pip3 if on Linux)
   X. Enter the command to start Stegocrypt-GUI:
-      Linux = python3 main.py
-      Windows = python main.py
+      \t\tLinux = python3 main.py
+      \t\tWindows = python main.py
 
 ## Setting Up Stegocrypt-GUI
 
