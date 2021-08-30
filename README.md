@@ -27,7 +27,7 @@ If you've recieved an image with encrypted text in it, you'll need to:
 
 ## Compiling Yourself:
 
-1. Set up a Go pathway.
+**1. Set up a Go pathway.**
 
     I. Make a new folder within Documents called "go".
   
@@ -39,13 +39,15 @@ If you've recieved an image with encrypted text in it, you'll need to:
   
     V. Within "steg", paste the "stegocrypt.go" file that I've included in this repository as well as the python script and requirements.txt.
   
-2. Use Go to build the binary for stegocrypt (Go must be installed first).
+**2. Use Go to build the binary for stegocrypt (Go must be installed first).**
 
     VI. Open the folder "~/Documents/go/src/local-only/steg" in your terminal (Powershell for Windows)
   
     VII. Enter the command, "go mod init example.com/user/steg"
   
     VIII. Enter the command, "go build stegocrypt.go". You should now have generated an executable file from the code that you've reviewed and certified to be malware-free.
+    
+**3. Install Python modules and run main.py**
   
     IX. With Python3 installed, enter the command, "pip install -r requirements.txt" (use pip3 if on Linux)
   
