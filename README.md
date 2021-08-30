@@ -29,9 +29,9 @@ If you've recieved an image with encrypted text in it, you'll need to:
 
 1. Set up a Go pathway.
 
-  I. Make a new folder within Documents called "go".
+    I. Make a new folder within Documents called "go".
   
-  II. Within "go", make a folder called "src".
+    II. Within "go", make a folder called "src".
   
   III. Within "src", make a folder called "local-only".
   
