@@ -74,4 +74,4 @@ Note: Memes are inconspicuous, so they're the perfect vessel for secret messages
 
 Note 2: You'll need to ensure that the image is not compressed when sending it to your recipient. Email attachments are usually good for this.
 
-Note 3: Example picture's password is Securepassword1!
+Note 3: Example picture's password is "Securepassword1!", without the quotation marks
