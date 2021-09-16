@@ -1,17 +1,17 @@
 # Handle encryption++
-import secrets
-from stegano import lsb as steg
-from PIL import Image as img
+import secrets  # Needed to enable cryptographically secure random number generation
+from stegano import lsb as steg  # Needed to enable steganography
 from secrets import randbelow  # Needed for cryptographically secure password generation
-from threading import Thread as th
-from subprocess import run
+from threading import Thread as th  # Needed to allow me to run threads
+from subprocess import run  # Allows me to call the Go-derived encryption exe
+from platform import system
 
 # Handle GUI
 import os
 import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import filedialog
-from platform import system
+
 
 class Stegocrypt:
     """
@@ -193,6 +193,7 @@ class Stegocrypt:
 
             if not os.path.isfile(str(pic)):  # User exited out; abort silently
                 self.workLock = False
+                print('\n~~~~~~~STOP ENCRY~~~~~~~\n')
                 return
 
             # 2. Get message, end prematurely if empty, and save password
@@ -203,12 +204,17 @@ class Stegocrypt:
 
             if passwd == '':  # Empty password invalid; abort
                 self.setText(where=self.displayWin, text='Aborted: Enter or generate password first')
+                print('[X] Failure: no password provided')
                 self.workLock = False
+                print('\n~~~~~~~STOP ENCRY~~~~~~~\n')
                 return
 
             if toEncode == '':  # No message; abort
                 self.setText(where=self.displayWin, text='Aborted: Nothing is in message')
+                print('[X] Failure: bruh, you didn\'t even write a message. What exactly were you ' +
+                      'expecting to happen?')
                 self.workLock = False
+                print('\n~~~~~~~STOP ENCRY~~~~~~~\n')
                 return
 
 
@@ -222,11 +228,13 @@ class Stegocrypt:
 
             if not extension == '.png':
                 self.setText(where=self.displayWin, text='Aborted: Selected file not PNG')
+                print('[X] Failure: image type not supported')
                 self.workLock = False
+                print('\n~~~~~~~STOP ENCRY~~~~~~~\n')
                 return
 
             # 3. Pass text onto stegocrypt
-            print('Trying to encrypt')
+            print('[+] Passing information into cipher')
             self.setText(where=self.displayWin, text='Now working on encrypting message with AES-256 cipher ...')
 
             with open(self.plainPath, 'w') as file:
@@ -238,8 +246,8 @@ class Stegocrypt:
                 cipherText = file.read()  # Get the base64 aes-encrypted ciphertext
 
             # 4. Pass byte stream to embed
-            print('Encrypted: ' + str(cipherText))
-            print('Passing stuff to embed')
+            print('[i] Ciphertext: ' + str(cipherText))
+            print('[+] Passing ciphertext to embedding function')
             self.embed(content=cipherText, output=putHere, picture=pic, filename=name+extension)
 
             # 5. Clean up
@@ -248,15 +256,22 @@ class Stegocrypt:
             with open(self.plainPath, 'w') as file:
                 file.write(secrets.token_hex(10000))  # Overwrite to help conceal message
 
+            print('[i] Flooded temp plaintext file with random bits')
+
             # 6. Release worklock, end
             self.workLock = False
-            return
 
         except Exception as e:
-            print('Error: ' + str(e))
+            print('[X] Error: ' + str(e))
             self.setText(where=self.displayWin, text='Error: ' + str(e))
+            with open(self.plainPath, 'w') as file:
+                file.write(secrets.token_hex(10000))  # Overwrite to help conceal message
+                print('[i] Flooded temp plaintext file with random bits')
+                print('\n~~~~~~~STOP ENCRY~~~~~~~\n')
             self.workLock = False
             return
+        print('\n~~~~~~~STOP ENCRY~~~~~~~\n')
+
 
     def decryPic(self):
         try:
@@ -282,12 +297,15 @@ class Stegocrypt:
 
             if not os.path.isfile(str(pic)):  # User exited out; abort silently
                 self.workLock = False
+                print('\n~~~~~~~STOP DECRY~~~~~~~\n')
                 return
 
             fileInfo = self.fileInfo(pathway=pic)  # Get name and extension
             if not fileInfo[1] == 'png':
                 self.setText(where=self.displayWin, text='Aborted: Selected file not supported image (PNG)')
                 self.workLock = False
+                print('[X] Failure: image type not supported')
+                print('\n~~~~~~~STOP DECRY~~~~~~~\n')
                 return
 
             # 2. Look into image for any embedding
@@ -296,21 +314,24 @@ class Stegocrypt:
 
             except Exception as e:
                 print(e)
-                self.setText(where=self.displayWin, text='Nothing found in image or image is corrupted')
+                self.setText(where=self.displayWin, text='Error: ' + str(e))
                 self.workLock = False
+                print('[X] Failure: ' + str(e))
+                print('\n~~~~~~~STOP DECRY~~~~~~~\n')
                 return
 
             if results == None:
                 self.setText(where=self.displayWin, text='Nothing was found in the image')
                 self.workLock = False
-                print('No messages located within image. Cancelling ...')
+                print('[X] No messages located within image. Cancelling ...')
+                print('\n~~~~~~~STOP DECRY~~~~~~~\n')
                 return
 
             else:
                 self.setText(where=self.displayWin, text='Found something in image. Attempting to decrypt ...')
 
             # 3. Attempt decryption
-            print('Found: ' + results)
+            print('[+] Found: ' + results)
 
             with open(self.ciphPath, 'w') as file:
                 file.write(results)  # Save ciphertext to file
@@ -321,10 +342,12 @@ class Stegocrypt:
                 self.setText(where=self.displayWin, text='Failed to decrypt, incorrect password likely.')
                 self.workLock = False
                 os.remove('Data/Messages/ERROR.log')
+                print('[X] Failure: incorrect password likely')
+                print('\n~~~~~~~STOP DECRY~~~~~~~\n')
                 return
 
             else:
-                print('Decrypted message succesfully')
+                print('[+++] Decrypted message successfully [+++]')
         
 
             with open(self.plainPath, 'r') as file:
@@ -341,10 +364,13 @@ class Stegocrypt:
             self.workLock = False
 
         except Exception as e:
-            print('Error: ' + str(e))
+            print('[X] Error: ' + str(e))
             self.setText(where=self.displayWin, text='Error: ' + str(e))
             self.workLock = False
+            print('\n~~~~~~~STOP DECRY~~~~~~~\n')
             return
+
+        print('\n~~~~~~~STOP DECRY~~~~~~~\n')
 
 
     def embed(self, content, output, picture, filename):
@@ -360,64 +386,21 @@ class Stegocrypt:
         self.setText(where=self.displayWin, text='Now working on embedding cipher text to image ...')
 
         # 1. Try embedding data into unchanged image. Compare output to determine if corruption occurred due to size
-        print('Embedding without image alteration')
+        print('[+] Embedding ...')
 
-        # We use base64 encoding here to allow bytes to be translated to and from strings, allowing ease of translation
-        modPic = steg.hide(picture, str(content))  # Create a modified pic in memory
-        modPic.save(output + '/' + filename)  # Save pic to hard drive
-
-        embedded = str(content) # This is what we embedded into the image
-        x = steg.reveal(output + '/' + filename)  # This is what we were able to find in the image
-
-        # 2. If corruption occurred, gradually increase size of image until no corruption is identified.
         try:
+            # We use base64 encoding here to allow bytes to be translated to and from strings
+            modPic = steg.hide(picture, str(content))  # Create a modified pic in memory
+            modPic.save(output + '/' + filename)  # Save pic to hard drive
 
-            if not embedded == str(x):  # If what we embedded does not match what we found, data was corrupted
-                # 1. Purge old image, set up loop variables
-                print('Data corrupt. Need larger image')
-                os.remove(output + '/' + filename)  # Delete the corrupted image (no risk, data already encrypted)
-                plusSize = 5  # We'll use this to gradually increase the image's size
+            self.setText(where=self.displayWin,
+                         text='Success! The message has been encrypted and hidden inside the image')
+            print('[+++] Ciphertext successfully embedded [+++]')
 
-                while not embedded == str(x):
-                    # self.setText(where=self.displayWin, text='Now growing image by ' + str(plusSize))
-                    print('Growing image by ' + str(plusSize))
-                    # 2. Grow image
-                    pic = img.open(picture)  # Put picture in memory
-                    size = [pic.size[0]+plusSize, pic.size[1]+plusSize]  # W x H, with plusSize added
-                    pic.resize((size[0], size[1]), img.ANTIALIAS)  # Resize
+        except Exception as e:
+            self.setText(self.displayWin, text='FAILURE: ' + str(e))  # Show user what happened
 
-                    # 3. Re-attempt steganographic embedding
-                    modPic = steg.hide(pic, str(embedded))  # Embed info into image
-                    modPic.save(output + '/' + filename)  # Save to hard drive
-                    del x  # Remove prior instance of x
-                    x = steg.reveal(output + '/' + filename)  # Check info you embedded. Will be compared at while test
 
-                    # 4. Increment plusSize by 5
-                    plusSize += 5
-                    print('Embedded: ' + embedded)
-                    print('Recovered:' + str(x))
-
-                    if plusSize >= 30:  # I'm not certain what to make the threshold.
-                        print('Infinite loop detected')
-                        self.setText(where=self.displayWin, text='Error: Unknown malfunction caused infinite loop')
-                        try:
-                            del plusSize, pic, size, x, embedded, modPic  # Clean up mess before leaving
-                        except Exception as e:  # If something goes wrong, ignore & move on. No sensitive data here
-                            print(e)  # Tell me what went wrong to help me patch it in the future
-                        return
-
-        except Exception as e:  # Since we're growing the image, eventually it may become too large to handle
-            self.setText(where=self.displayWin, text='Error: Message too large to embed')
-            print(e)
-            try:
-                del plusSize, pic, size, x, embedded, modPic  # Clean up mess before leaving
-            except Exception as e:
-                print('2: ' + str(e))  # The two signifies that this is a second-level exception-catch
-            self.workLock = False
-            return
-
-        self.setText(where=self.displayWin, text='Success! The message has been encrypted and hidden inside the image')
-        print('Image successfully embedded with encrypted text')
 
 
     def fileInfo(self, pathway):
@@ -428,7 +411,6 @@ class Stegocrypt:
         :return: Tuple with name and extension as (name, extension)
         """
 
-        print('Trying to determine name and extension')
         newName = []
 
         for char in range(len(pathway) - 1, -1, -1):  # Reverse iterate
@@ -438,10 +420,11 @@ class Stegocrypt:
             else:  # Record everything
                 newName.append(pathway[char])
 
-        newName.reverse()  # Correct orientation (its backwards since we were reverse iterating)
+        newName.reverse()  # Correct orientation (it's backwards since we were reverse iterating)
         results = ''  # Create a placeholder variable: this'll hold the string of the list compiled
         results = results.join(newName)  # Compile list
 
+        print('[+] Determined filetype and filename')
         return tuple(results.split('.'))  # Split by the period. The name = 0, extension = 1
 
 
@@ -505,6 +488,7 @@ class Stegocrypt:
 
         self.setText(where='password', text=gen)  # Pass string to password text box
         self.setText(where=self.displayWin, text='Created new password (please record it as it\'s unsaved)')
+        print('[i] Generated random cryptographically-secure password')
         self.workLock = False  # Release worklock
         return
 
