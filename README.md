@@ -21,7 +21,7 @@ If you've recieved an image with encrypted text in it, you'll need to:
 ## Download and Run Stegocrypt-GUI v0.2.2:
 
 1. Download Python [here](https://www.python.org/downloads/)
-2. Windows: open PowerShell and use "pip install" to install this program's requirements as described in the file named requirements.txt. Look it up on Google if you get stuck.
+2. Windows: open PowerShell (Win + X, then 'A' after the options pop up) and use "pip install" to install this program's requirements as described in the file named requirements.txt. Look it up on Google if you get stuck.
 3. Linux: I am taking the liberty to assume you've got the requirement installation handled.
 4.  Windows: double-click main.py or type the command "python main.py" into the PowerShell window after you've navigated to Stegocrypt-GUI's folder (look up using cd command).
 5.  Linux: "python3 main.py" 
