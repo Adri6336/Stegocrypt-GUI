@@ -18,9 +18,14 @@ If you've recieved an image with encrypted text in it, you'll need to:
 
 # Getting Started With Stegocrypt-GUI
 
-## Download:
+## Download and Run Stegocrypt-GUI v0.2.2:
 
-*Note: Malwarebytes considers the exe to be malware because it uses PyInstaller (same tool others have used to compile malware). I assume this is a heuristics thing, so likely many other antivirus solutions that use heuristics will also read a false positive. If this concerns you, you can look through my code (to ensure that it's not malicious -- I promise it isn't), compile the Go, and run the script without having to run any of the executables I've provided. If you trust that I'm telling the truth, you can use the following executable packages to quickly get Stegocrypt-GUI up and running:*
+1. Download Python [here](https://www.python.org/downloads/)
+2. Windows: open PowerShell and use "pip install" to install this program's requirements as described in the file named requirements.txt. Look it up on Google if you get stuck.
+3. Linux: I am taking the liberty to assume you've got the requirement installation handled.
+4.  Windows: double-click main.py or type the command "python main.py" into the PowerShell window after you've navigated to Stegocrypt-GUI's folder (look up using cd command).
+5.  Linux: "python3 main.py" 
+
 
 - [Stegocrypt-GUI Linux Version 0.2]()
 - [Stegocrypt-GUI Windows Version 0.2]()
@@ -61,11 +66,11 @@ If you've recieved an image with encrypted text in it, you'll need to:
 2. Extract contents.
 3. On Windows, run the "Stegocrypt-GUI.exe" file found within. On Linux, execute the "start-stegocryptgui" script found within.
 
-# Version 0.2 Changelog
+# Version 0.2.2 Changelog
 
-- Stegocrypt-GUI now creates the directories and files it needs (except Go-derived exe) upon runtime.
-- Fixed incorrect password decryption notification. Used to say 'decryption successful', now indicates that it actually failed.
-- Made the Python script able to run on both Linux and Windows without forcing me to modify it every time.
+- Made the terminal output more intelligible / useful
+- Did some other stuff a while ago that made it better, but forgot to make a note of the changes :p. Just take my word for it that this version is better.
+- Deleted useless code from script.
 
 
 -------------------------
