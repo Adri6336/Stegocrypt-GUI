@@ -22,8 +22,8 @@ If you've recieved an image with encrypted text in it, you'll need to:
 
 *Note: Malwarebytes considers the exe to be malware because it uses PyInstaller (same tool others have used to compile malware). I assume this is a heuristics thing, so likely many other antivirus solutions that use heuristics will also read a false positive. If this concerns you, you can look through my code (to ensure that it's not malicious -- I promise it isn't), compile the Go, and run the script without having to run any of the executables I've provided. If you trust that I'm telling the truth, you can use the following executable packages to quickly get Stegocrypt-GUI up and running:*
 
-- [Stegocrypt-GUI Linux Version 0.2](https://github.com/Adri6336/stegocrypt-gui_dl/raw/gh-pages/Stegocrypt-GUI_v0.2%20--%20Lin.tar.gz)
-- [Stegocrypt-GUI Windows Version 0.2](https://github.com/Adri6336/stegocrypt-gui_dl/raw/gh-pages/Stegocrypt-GUI_v0.2%20--%20Win.zip)
+- [Stegocrypt-GUI Linux Version 0.2]()
+- [Stegocrypt-GUI Windows Version 0.2]()
 
 ## Compiling Yourself:
 
