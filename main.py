@@ -473,8 +473,6 @@ class Stegocrypt:
 
             elif numOrChar == 2:  # Use Special Character
                 randName.append(self.special[randbelow(specialCt)])
-                if randName[-1] == "'" or randName[-1] == '"' or randName[-1] == '\\':  # This is unnecessary here, but idk
-                    randName[-1] = '*'
 
             else:  # Use Capitalized Character
                 randName.append(chr(65 + randbelow(26)))  # 65-90
