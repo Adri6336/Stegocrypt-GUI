@@ -71,6 +71,7 @@ If you've recieved an image with encrypted text in it, you'll need to:
 - Made the terminal output more intelligible / useful
 - Did some other stuff a while ago that made it better, but forgot to make a note of the changes :p. Just take my word for it that this version is better.
 - Deleted useless code from script.
+- Deleted unnecessary code that limited the randomness of password generation.
 
 
 -------------------------
