@@ -524,7 +524,7 @@ class Stegocrypt:
 if __name__ == '__main__':
     root = tk.Tk()
     root.resizable(height=False, width=False)  # Prohibit resizing the height or width of window
-    root.wm_title("Stegocrypt 0.2")  # Sets the title of the window to the string included as an argument
+    root.wm_title("Stegocrypt 0.2.2")  # Sets the title of the window to the string included as an argument
 
     app = Stegocrypt(root)
     app.run()
