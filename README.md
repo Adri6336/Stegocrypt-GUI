@@ -29,7 +29,7 @@ If you've recieved an image with encrypted text in it, you'll need to:
 5.  Linux: "python3 main.py" 
 
 
-- [Stegocrypt-GUI Linux Version 0.2.2]()
+- [Stegocrypt-GUI Linux Version 0.2.2](https://github.com/Adri6336/stegocrypt-gui_dl/raw/0.2.2/Stegocrypt-GUI-Lin.tar.gz)
 - [Stegocrypt-GUI Windows Version 0.2.2](https://github.com/Adri6336/stegocrypt-gui_dl/raw/0.2.2/Stegocrypt-GUI_Win.zip)
 
 ## Compiling Yourself:
