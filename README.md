@@ -24,18 +24,23 @@ If you've recieved an image with encrypted text in it, you'll need to:
 
 **Windows**
 
+- [Stegocrypt-GUI Windows Version 0.2.2](https://github.com/Adri6336/stegocrypt-gui_dl/raw/0.2.2/Stegocrypt-GUI_Win.zip)
+
 1. Download the zip in the below link titled, "Stegocrypt-GUI Windows".
 2. Extract the zip and open the new folder.
 3. Follow the steps ennumerated in the ReadMe.txt within.
 
 **Linux/UNIX**
+
+- [Stegocrypt-GUI Linux Version 0.2.2](https://github.com/Adri6336/stegocrypt-gui_dl/raw/0.2.2/Stegocrypt-GUI-Lin.tar.gz)
+
 1. Download the tar.gz file in the below link titled, "Stegocrypt-GUI Linux".
 2. Extract the tar.gz file, then open the terminal within the newly created folder.
 3. enter the command "chmod +x start-stegocryptgui;./start-stegocryptgui"
 
 
-- [Stegocrypt-GUI Linux Version 0.2.2](https://github.com/Adri6336/stegocrypt-gui_dl/raw/0.2.2/Stegocrypt-GUI-Lin.tar.gz)
-- [Stegocrypt-GUI Windows Version 0.2.2](https://github.com/Adri6336/stegocrypt-gui_dl/raw/0.2.2/Stegocrypt-GUI_Win.zip)
+
+
 
 
 # Version 0.2.2 Changelog
