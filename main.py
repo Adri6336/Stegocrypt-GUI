@@ -453,7 +453,6 @@ class Stegocrypt:
     def randGen(self, size):  # This function will randomly generate text
         """
         This function will randomly generate text using a cryptographically secure pseudorandom number generator.
-        Yoinked from EnKryptos with slight modification.
 
         :param size: This indicates how many chars we want to generate.
         :return: None
