@@ -26,6 +26,9 @@ If you've recieved an image with encrypted text in it, you'll need to:
 
 - [Stegocrypt-GUI Windows Version 0.2.2](https://github.com/Adri6336/stegocrypt-gui_dl/raw/0.2.2/Stegocrypt-GUI_Win.zip)
 
+There's an exe file included, but it may not work in some cases. A more reliable way to run stegocrypt is by downloading python 3, opening powershell
+and running the command "pip install -r requirements.txt" in the directory where you downloaded stegocrypt, and then entering "python main.py".
+
 1. Download the zip in the below link titled, "Stegocrypt-GUI Windows".
 2. Extract the zip and open the new folder.
 3. Follow the steps ennumerated in the ReadMe.txt within.
@@ -35,7 +38,8 @@ If you've recieved an image with encrypted text in it, you'll need to:
 - [Stegocrypt-GUI Linux Version 0.2.2](https://github.com/Adri6336/stegocrypt-gui_dl/raw/0.2.2/Stegocrypt-GUI-Lin.tar.gz)
 
 First you will need tkinter and pip installed. To do this, enter the command "sudo apt install python3-pip python3-tk". Once this is done, 
-you can either manually install the requirements.txt modules or you can run the start-stegocryptgui script that will do it for you.
+you can either manually install the requirements.txt modules or you can run the start-stegocryptgui script that will do it for you. To do it manually,
+use the command, "pip3 install -r requirements.txt"
 
 
 1. Download the tar.gz file in the below link titled, "Stegocrypt-GUI Linux".
