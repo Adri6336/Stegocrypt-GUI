@@ -3,6 +3,12 @@
 
 Tool for easily steganographically embedding AES-256 encrypted messages into images. 
 
+
+![_image](https://github.com/Adri6336/Stegocrypt-GUI/blob/v-0.2.2/stegocrypt.png)
+
+
+# Getting Started
+
 All you'll need to do to start is:
 
 1. Run Stegocrypt-GUI
