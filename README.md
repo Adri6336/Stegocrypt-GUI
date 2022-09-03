@@ -34,7 +34,8 @@ If you've recieved an image with encrypted text in it, you'll need to:
 
 - [Stegocrypt-GUI Linux Version 0.2.2](https://github.com/Adri6336/stegocrypt-gui_dl/raw/0.2.2/Stegocrypt-GUI-Lin.tar.gz)
 
-Requirements: first you will need tkinter and pip installed. To do this, enter the command "sudo apt install python3-pip python3-tk"
+First you will need tkinter and pip installed. To do this, enter the command "sudo apt install python3-pip python3-tk". Once this is done, 
+you can either manually install the requirements.txt modules or you can run the start-stegocryptgui script that will do it for you.
 
 
 1. Download the tar.gz file in the below link titled, "Stegocrypt-GUI Linux".
